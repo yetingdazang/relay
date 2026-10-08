@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "id": "20261008-235200-relay-mobile-image-test",
+  "source_hash": "7ab9f9814a8586e1e5e1abfa85f5040ee65f9667b18659e0fa08fb55fe0edc65",
+  "files": {
+    "attachments/relay-capture-test.png": "c5bc88385b00f8067e642d6b5cef366eb37de10eaf1af09b5d9fd082e70876bf",
+    "manifest.json": "a88c0faa283fc6d5032b0e5839e8f0a5305ae4f437136750cc502a82ed814117",
+    "note.md": "9d8d553cfab52cd46c164a8476dc46f2bb4f9825d48987041254e9fc54f94f99"
+  },
+  "category": "projects",
+  "result": "imported_and_backup_restore_verified"
+}
