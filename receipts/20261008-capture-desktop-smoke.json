@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "id": "20261008-capture-desktop-smoke",
+  "source_hash": "28036eb1dd67945ec0286860c68da5fb5abd374248af63977a185bee8909c07c",
+  "files": {
+    "attachments/通道验证.png": "a6a80f06cdfa4ba14ecf3c2e4764e2ea5dbcd8d30748b67efb7d0abac49f43a9",
+    "manifest.json": "7a7bfb1fa7e7a66dcea1cc80c4b718162a5964321018392dd59b2bb35fe6d695",
+    "note.md": "e055c49dc6044e7227d528934309fe0650c4d4aa58d8d6d778d50b5d9e3b3528"
+  },
+  "category": "inbox",
+  "result": "imported_and_backup_restore_verified"
+}
