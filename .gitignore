@@ -22,3 +22,15 @@ config/targets.local.json
 .obsidian/workspace-mobile.json
 .obsidian/cache/
 .trash/
+
+# Notes are stored in the separate local Obsidian vault
+notes/
+.obsidian/
+Excalidraw/
+00-知识库首页.md
+*.base
+config/notes_sync.local.json
+config/notes_sync_devices.local.json
+
+# Machine-local GitHub capture importer
+config/capture.local.json
