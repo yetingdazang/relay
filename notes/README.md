@@ -12,4 +12,4 @@
 
 ## 文件与图片命名
 
-在处理 `notes/` 中明显由设备默认命名的笔记或图片时，参考 [知识文件命名规则](../docs/KNOWLEDGE_FILE_NAMING.md)：先识别真实内容，再安全改名、补充说明并同步更新引用。无法查看内容时不要猜测。
+仅在有**新文件首次加入** `notes/` 时，参考 [增量文件命名规则](../docs/KNOWLEDGE_FILE_NAMING.md) 检查默认名称并补充中文描述。已检查文件和历史文件不会因每次同步而重复分析；游标记录在 `config/knowledge_naming_cursor.json`。
