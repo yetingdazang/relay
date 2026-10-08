@@ -21,7 +21,9 @@ MAX_BUNDLE = 100 * 1024 * 1024
 
 
 def git(repo, *args, binary=False):
-    result = subprocess.run(["git", "-C", str(repo), *args], capture_output=True, timeout=45)
+    result = subprocess.run(["git", "-C", str(repo), *args], capture_output=True, timeout=45,
+                            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+                            env={**os.environ, "GIT_TERMINAL_PROMPT": "0", "GCM_INTERACTIVE": "never"})
     if result.returncode:
         # Git output may contain credential URLs; never include it in diagnostics.
         raise RuntimeError("Git operation failed: " + args[0])
@@ -88,8 +90,10 @@ def validate(bundle, files):
     if manifest.get("version") != 1 or manifest.get("id") != bundle or not re.fullmatch(r"[a-z0-9][a-z0-9-]{3,79}", bundle):
         raise ValueError("Invalid bundle ID or version")
     category = manifest.get("category", "inbox")
-    if category not in CATEGORIES:
-        raise ValueError("Unknown category; choose inbox for uncertain notes")
+    classification = "manifest"
+    if not isinstance(category, str) or category not in CATEGORIES:
+        category = "inbox"
+        classification = "inbox_fallback"
     if "note.md" not in files:
         raise ValueError("Ready bundle is missing note.md")
     note = files["note.md"].decode("utf-8-sig")
@@ -140,7 +144,7 @@ def validate(bundle, files):
         if embed not in outputs:
             raise ValueError("Unresolved Markdown attachment")
     return {"source_hash": source_hash, "source_files": source_files,
-            "category": category, "outputs": outputs, "note": filename}
+            "category": category, "classification": classification, "outputs": outputs, "note": filename}
 
 
 def import_bundle(config, bundle, validated, previous=None):
@@ -171,7 +175,7 @@ def import_bundle(config, bundle, validated, previous=None):
         destination.parent.mkdir(parents=True, exist_ok=True)
         os.rename(stage, destination)
     record = {"source_hash": validated["source_hash"], "source_files": validated["source_files"],
-              "category": validated["category"], "destination": relative.as_posix(),
+              "category": validated["category"], "classification": validated.get("classification", "manifest"), "destination": relative.as_posix(),
               "outputs": {path: hashlib.sha256(data).hexdigest() for path, data in validated["outputs"].items()},
               "note": (relative / validated["note"]).as_posix(), "status": "imported", "reviewed": False}
     return record, True
@@ -257,9 +261,10 @@ def process(config, ref=None, cleanup=True):
                 record["backup"] = str(Path(backup["snapshot"]).parent)
                 verify_backup(record)
             atomic_json(state_path, state)
-        if cleanup:
+        cleanup_candidates = {key: row for key, row in state["bundles"].items() if key in packages}
+        if cleanup and cleanup_candidates:
             try:
-                report["acknowledged"] = finalize(config, state["bundles"])
+                report["acknowledged"] = finalize(config, cleanup_candidates)
                 for bundle in report["acknowledged"]:
                     state["bundles"][bundle]["status"] = "acknowledged"
                 atomic_json(state_path, state)
@@ -274,9 +279,16 @@ def main():
     parser.add_argument("--ref", help="Use an already-fetched immutable snapshot")
     parser.add_argument("--no-cleanup", action="store_true")
     parser.add_argument("--mark-reviewed", metavar="BUNDLE_ID")
+    parser.add_argument("--pending", action="store_true", help="List pending batch notes without fetching or AI")
     args = parser.parse_args()
     config = json.loads(Path(args.config).read_text(encoding="utf-8"))
-    if args.mark_reviewed:
+    if args.pending:
+        state_path = Path(config["state_path"])
+        state = json.loads(state_path.read_text(encoding="utf-8")) if state_path.exists() else {"bundles": {}}
+        pending = [{"id": key, "note": row["note"], "category": row["category"]}
+                   for key, row in state["bundles"].items() if not row.get("reviewed")]
+        print(json.dumps({"pending_count": len(pending), "notes": pending}, ensure_ascii=False))
+    elif args.mark_reviewed:
         state_path = Path(config["state_path"])
         with exclusive_lock(state_path.with_suffix(".lock")):
             state = json.loads(state_path.read_text(encoding="utf-8"))
