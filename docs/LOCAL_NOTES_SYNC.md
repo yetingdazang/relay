@@ -1,140 +1,67 @@
-# 本地知识库与选择同步
+# 本地知识库与手机全库同步
 
-当前方案确认于 2026-10-08。电脑保存完整知识库，Android 手机和平板仅保存选定内容。Git 用于代码、规则和 Codex 任务，笔记另做独立备份。R2 本轮不接入。
+2026-10-08 用户明确要求清理测试资料，并将所有知识文件同步到手机；随后选择“全库双向同步，编辑和删除同步，保留备份”。本方案取代之前的三个选择同步区与收件箱导入。
 
-## 实际位置
+## 位置与同步配置
 
-| 用途 | 位置 |
+| 用途 | 位置或设置 |
 | --- | --- |
 | 完整知识库 | E:/OBSIDIAN |
-| Relay 任务与代码仓库 | E:/Relay |
-| 手机接收暂存 | E:/RelaySync/Incoming/手机 |
-| 平板接收暂存 | E:/RelaySync/Incoming/平板 |
-| 正式导入笔记 | E:/OBSIDIAN/notes/00-Inbox/手机、平板 |
-| 初始完整备份及本机模拟验证 | E:/RelayBackups/20261008-212103 |
-| 每日独立备份 | C:/Users/Administrator/RelayNotesBackups |
+| Relay 代码与任务 | E:/Relay |
+| 手机同步项 | relay-vault-phone，Relay 全库 |
+| 两端类型 | Send & Receive |
+| 电脑路径 | E:/OBSIDIAN |
+| 手机路径 | 用户当前 Obsidian 打开的本地知识库根目录，不假定 Documents 路径 |
+| 独立备份 | C:/Users/Administrator/RelayNotesBackups |
+| 当前管理地址 | http://127.0.0.1:8384 |
 
-C: 位于磁盘 0，E: 位于磁盘 1，已确认是两个物理磁盘。每日备份同时保存笔记、插件配置和本地同步运行设置。备份不上传 GitHub。
+笔记、图片、PDF、其他附件、首页、模板、Bases 列表与 Excalidraw 文件均包含。
+电脑 `.stignore` 排除 `.obsidian`、`.git`、`.trash`、`.stversions`、本机 AGENTS 与系统临时文件。手机端建议采用相同忽略模式。插件、认证与默认目录不会从电脑覆盖手机。
+GitHub main 保留原状，笔记不重新进入 Git。代码成果仍保存到 codex/local-notes-sync。
 
-## 怎样选择给移动端的内容
+## 已执行的迁移
 
-把笔记和关联附件放入知识库根目录下的以下文件夹：
+1. 清理前备份 notes-20261008-230512-925634：87 文件与 11 项运行设置验证通过；隔离恢复哈希一致。
+2. 核对测试文件内容及备份后删除 21 个测试/过时文件，包括原 Git 同步测试、模拟节点测试、真实手机测试及其图片、三套旧入口与重复模板、未使用的空 Bases 视图。原知识笔记、原始大图、模板与分类列表保留。
+3. 暂停并移除电脑旧五个 Syncthing 同步项的配置，不删手机本地资料；保存旧配置到清理前备份目录。
+4. 移除旧收件箱中的四个测试暂存文件，先核对备份。
+5. 新建 relay-vault-phone，分享给已配对手机。电脑类型 sendreceive，版本保留 simple/keep=20/cleanoutDays=0。
+6. config/notes_sync.local.json 的 incoming 设为空。停止旧导入进程后重启；后台只做每日独立备份，防止旧暂存文件再写入全库。
+7. 更新首页、本机规则与设备说明。真实手机全库接入待用户完成。
+8. 清理后备份 notes-20261008-231759-864229：65 文件、11 项运行设置及隔离恢复验证通过；保留的 16 个原知识/附件文件 SHA256 与清理前一致。首页与设备说明目录链接验证通过，正式同步项无错误。
 
-- 手机同步：仅手机接收。
-- 平板同步：仅平板接收。
-- 共同同步：两台移动设备接收。
-- notes 下其他分类：仅电脑保存，除非你主动放入同步区。
+首次合并时手机旧测试副本可能重新进入电脑。确定清单保存在本机 RelayNotes/full-sync-cleanup-pending.json；只处理清单中的测试文件，手机其他资料保留。全库同步完成后再次清理并确认两端。
 
-每个同步区都可建子文件夹。图片、PDF、音频等附件必须随笔记放进目标同步区。引用其他未选择的笔记，移动端可能无法打开；需要一起同步相关资料，或保留普通文本说明。
+## 手机操作
 
-跨目录移动笔记时，优先使用 Obsidian 的移动功能，以更新内部链接。取消下发时，把内容移回电脑专用分类，电脑保留原件，移动端当前同步副本将移除。移动端历史版本可能仍保留旧副本，这不等于安全擦除。
+1. Syncthing-Fork 中移除“手机同步、共同同步、手机收件箱”三个旧共享项；仅删除同步配置，保留本地文件。
+2. 添加标签“Relay 全库”，ID relay-vault-phone，目录选择当前 Obsidian 的整个知识库根目录，类型“发送和接收”，共享给 Relay 电脑。
+3. 忽略模式建议：/.obsidian、/.git、/.trash、/.stversions、/AGENTS.md。电脑已配置。
+4. 两端先正常合并。看到完整首页、notes 分类、原始图片与模板后，由 Codex 再清理已确认的测试副本。
+5. 手机新笔记位置仍可用 notes/00-Inbox/手机，附件 notes/00-Inbox/手机/附件。Templates 改为 notes/03-Resources/Templates，并启用内置 Bases。
+6. 删除和移动会传播；有疑问先恢复到独立目录核对，而不对当前 Vault 使用覆盖按钮。
 
-三个下发区域：电脑 Send Only，移动端 Receive Only，先用于阅读。移动端新笔记、截图和需要回传的修改进入本设备收件箱。需要多端直接编辑下发笔记时，另行改为双向并验证冲突处理。
+## 自动运行与恢复
 
-## 手机和平板新笔记怎样汇入电脑
-
-手机的新建笔记目录：notes/00-Inbox/手机。
-平板的新建笔记目录：notes/00-Inbox/平板。
-每台设备把附件也放进自己的收件箱，例如 notes/00-Inbox/手机/附件。
-
-对应收件箱的 Syncthing 模式：移动端 Send Only，电脑 Receive Only。
-电脑接收暂存区与正式笔记区分开。导入工具每 15 秒检查接收区：
-
-- 新笔记和附件复制到正式笔记区，保留路径与附件引用。
-- 未变动的文件不重复复制。
-- 电脑修改过的文件与移动端新版本冲突时，另存带“同步冲突”的副本。
-- 复制时检测电脑目标是否发生变化，检测到变化则保留电脑版本并等待后续导入。
-- 移动端删除或清空收件箱，不删除已经导入的正式笔记。
-- 不自动整理、改名或重排历史笔记。
-
-电脑离线时移动端继续本地保存；电脑和设备同时在线、能互相连接时补传。当前先配置局域网发现，全球发现、中继和路由器端口映射均关闭。不同网络远程同步尚未配置。
-
-## Android 初次接入
-
-1. 从 Syncthing-Fork 官方发布页安装当前 Android 客户端：
-   https://github.com/researchxxl/syncthing-android/releases/latest
-2. 先完整保留原 Relay Vault。为新的本地同步方式建立单独的本地 Vault，例如：
-   手机：/storage/emulated/0/Documents/Obsidian-Mobile
-   平板：/storage/emulated/0/Documents/Obsidian-Tablet
-3. 新 Vault 不启用 Obsidian Git。原 Relay Vault 的 Git 自动 Pull/Push 也需在最终切换前停用。
-4. 在 Syncthing-Fork 的“显示设备 ID”页面取得该设备 ID。将电脑添加为设备，并在电脑运行配对工具；两端互相确认。
-5. 接受电脑提供的三个文件夹，按下表映射路径与模式。不要将完整电脑知识库作为共享文件夹。
-6. Obsidian 打开刚创建的本地 Vault。新建笔记默认目录按本设备收件箱设置，附件也放入本设备收件箱。
-7. 开启内置 Bases，模板目录可设为共同同步/模板。
-8. Android 系统允许同步应用访问这个本地目录；需要可靠后台同步时，按系统提示允许后台运行。
-
-| 角色 | Folder ID | 移动端 Vault 内路径 | 移动端模式 |
-| --- | --- | --- | --- |
-| 手机 | relay-inbox-phone | notes/00-Inbox/手机 | Send Only |
-| 手机 | relay-notes-phone | 手机同步 | Receive Only |
-| 手机 | relay-notes-common | 共同同步 | Receive Only |
-| 平板 | relay-inbox-tablet | notes/00-Inbox/平板 | Send Only |
-| 平板 | relay-notes-tablet | 平板同步 | Receive Only |
-| 平板 | relay-notes-common | 共同同步 | Receive Only |
-
-电脑管理地址：http://127.0.0.1:8384。
-电脑设备 ID 存在本机 RelayNotes/desktop-device-id.txt，也可在管理页面“操作 → 显示 ID”查看。
-配对工具只分享本设备对应区域，不分享另一台设备专用区域。
-
-## 验证顺序
-
-先手机，再平板。每台设备验证：
-
-1. 只收到本设备同步区和共同区，没有另一台设备专用区或电脑专用资料。
-2. 打开同步测试笔记和图片，确认附件显示。
-3. 在收件箱创建一篇明确命名的新笔记，并贴一张非敏感图片。
-4. 在电脑确认相同路径的正式笔记和图片都出现。
-5. 在电脑与移动端分别修改测试笔记，确认两份版本被保留。
-6. 清理移动端测试收件箱，确认电脑已导入的原件仍存在。
-7. 把一篇下发测试笔记移回电脑专用区，确认目标设备移除当前副本，电脑原件仍存在。
-
-2026-10-08 本机两台隔离模拟节点已验证这些传输和保护行为。
-8 项数据保护/恢复单元测试通过。真实手机已配对：三个指定区域已共享；手机新建笔记与 PNG 自动导入电脑，SHA256 一致且电脑 Obsidian 图片显示正常。电脑新下发笔记的手机显示确认、平板配对、持续后台运行以及真实设备的数据保护场景仍待验证。
-
-## 自动运行与备份
-
-当前用户登录后通过“Relay Notes Sync”启动项运行：
-
-- Syncthing 后台服务。
-- 移动收件箱导入工具。
-- 每 24 小时一次完整知识库备份，并逐文件核对 SHA256。
-- 电脑离线错过的备份，在下次运行时补做一次。
-
-旧版本备份不自动删除。同步接收暂存区另外保留最多 20 个远端旧版本，清理期 30 天。正式笔记的恢复以独立备份为准。
-
-初始 214 文件完整备份已复制到隔离恢复目录，全部 SHA256 一致。
-切换后的最新 84 文件知识库备份也已恢复验证，并备份核对了 10 个本地运行设置文件。
-恢复时先恢复到新目录并核对内容，不直接覆盖正在使用的知识库。
-
-## 桌面管理命令
-
-从 PowerShell 7 运行，Python 使用 C:/Program Files/Python313/python.exe。
+当前用户登录后通过 Relay Notes Sync 启动 Syncthing 与后台备份助手，每 24 小时备份并核对 SHA256。错过时在下次运行补做。旧快照保留。
+C: 磁盘 0，E: 磁盘 1，是两个物理磁盘。
 
 ```powershell
-# 查看同步状态，不显示认证值
 & 'C:/Program Files/Python313/python.exe' E:/Relay/scripts/notes_sync_status.py
-
-# 指定设备角色进行配对；DEVICE_ID 替换为 Android 显示的 ID
-& 'C:/Program Files/Python313/python.exe' E:/Relay/scripts/pair_notes_device.py --role phone --device-id DEVICE_ID
-& 'C:/Program Files/Python313/python.exe' E:/Relay/scripts/pair_notes_device.py --role tablet --device-id DEVICE_ID
-
-# 手工启动后台服务
 & E:/Relay/scripts/start_notes_sync.ps1
-
-# 立即备份并验证恢复
 & 'C:/Program Files/Python313/python.exe' E:/Relay/scripts/relay_notes_backup.py --verify-restore
-
-# 只恢复到一个不存在的新目录，不覆盖正式知识库
 & 'C:/Program Files/Python313/python.exe' E:/Relay/scripts/relay_notes_backup.py --restore 'C:/Users/Administrator/RelayNotesBackups/某次备份目录' --destination 'E:/Obsidian-Restore-Check'
 ```
 
-本地认证材料存于 Windows 用户的 RelayNotes/syncthing 目录。恢复笔记后，本地同步运行设置可从该次备份的 runtime 子目录单独恢复；恢复前先正常关闭同步服务，保留当前运行设置的副本。
+runtime 设置备份包含本地认证材料，不上传 GitHub。恢复运行设置前正常关闭 Syncthing，并备份当前设置。版本保留仅覆盖收到的远端修改，不能代替独立快照。
 
-## 尚未完成的步骤
+## 验证与待办
 
-- 平板安装/配对；手机电脑下发笔记显示确认；真实设备持续后台运行、离线补传和数据保护场景验证。
-- Windows 防火墙已获用户明确授权并完成验证：仅 Syncthing 程序、Private 专用网络、本地网段入站 TCP 22000 与 UDP 21027/22000。真实局域网设备连接仍待验证；当前以太网为专用网络，WLAN 为公共网络，未更改网络类型。
-- 旧移动 Vault 停用 Git 自动同步后，再将 Git 分离变更合入远程 main。
-- 可选：额外离线备份、跨网络同步、多端直接编辑模式。
+旧选择同步阶段：8 项数据保护/恢复测试、两台隔离本机节点测试通过；真实手机笔记与 PNG 自动导入，哈希一致且电脑 Obsidian 显示正常；用户确认电脑下发文字和图片手机显示正常。
+当前全库阶段：电脑配置、清理后文件哈希与备份验证；手机接入、最终合并清理与全库实际同步状态仍待完成。
+旧 verify_notes_sync.py 仅适用于无真实设备的旧选择同步测试配置，不得用于当前正式 Vault。
+平板尚未配对。后台持续运行、离线补传和真实设备恢复仍待验收。
+当前只使用局域网发现；全球发现、中继与路由器映射关闭。不同网络远程同步尚未配置。
 
-原 GitHub main 和历史笔记暂保留，以防旧 Android Git Pull 提前移除笔记。新实现先使用独立代码分支保存。
+防火墙已明确批准并验证：仅 Syncthing 程序、Private 网络、本地网段入站 TCP 22000、UDP 21027/22000。以太网为 Private，WLAN 为 Public，未改网络类型；实际手机连接由电脑主动发起已成功。
+旧 Android Git 自动同步停用仍需确认，之后才处理远程 main 合并，防止旧 Vault Pull 收到笔记删除。

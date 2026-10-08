@@ -81,6 +81,8 @@ def main():
     parser.add_argument("--output-root", required=True)
     args = parser.parse_args()
     config = json.loads(Path(args.config).read_text(encoding="utf-8"))
+    if config.get("sync_mode") == "phone_full_bidirectional":
+        parser.error("This legacy selective-sync test must not run against the full phone vault")
     output_root = Path(args.output_root).resolve()
     if output_root.exists():
         raise ValueError("Use a new verification output directory")

@@ -19,6 +19,8 @@ def main():
         parser.error("Invalid Syncthing device ID")
     config_path = Path(args.config)
     config = json.loads(config_path.read_text(encoding="utf-8"))
+    if not any(args.role in folder["audience"] for folder in config["folders"]):
+        parser.error("No folders are configured for this role; choose its sync scope first")
     pairing_path = config_path.with_name("notes_sync_devices.local.json")
     paired = json.loads(pairing_path.read_text(encoding="utf-8")) if pairing_path.exists() else {}
     if args.role in paired and paired[args.role] != device_id:
