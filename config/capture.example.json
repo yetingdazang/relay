@@ -5,9 +5,5 @@
   "staging_root": "E:/RelaySync/GitHubCache/staging",
   "state_path": "C:/Users/Administrator/AppData/Local/RelayNotes/capture-state.json",
   "backup_config": "E:/Relay/config/notes_sync.local.json",
-  "watch": {
-    "poll_seconds": 5,
-    "retry_seconds": 60,
-    "maximum_retry_seconds": 600
-  }
+  "launch_mode": "on_demand_shortcut"
 }

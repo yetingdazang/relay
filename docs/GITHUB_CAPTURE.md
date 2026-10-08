@@ -43,12 +43,12 @@ Markdown 写入、二进制图片上传需要分别实际验证，不能根据�
 
 ## 自动接收：不消耗 AI token
 
-本机采用本地 Python 后台程序 `scripts/relay_capture_watch.py`，不调用模型/API，不创建 Codex 自动 AI 任务，也不把笔记正文或接收报告放进模型上下文。
+本机采用启动时执行一次的本地 Python 程序 `scripts/relay_capture_watch.py --once --quiet`，不调用模型/API，不创建 Codex 自动 AI 任务，也不把笔记正文或接收报告放进模型上下文。
 
-1. Windows 用户登录时，现有 Relay Notes Sync 启动项启动 Syncthing、独立备份助手和收信接收器。接收器每 5 秒在本机查看进程；发现一个新的 Codex 桌面主进程时接收一次，不因其多个子进程重复运行。
+1. 从桌面“ChatGPT(走代理)”入口打开 Codex 时，start_codex_relay.ps1 沿用原代理启动器并附带执行一次收信。收信结束即退出，不登录自启、不常驻检测。原有 Syncthing/备份登录入口不包含收信。
 2. 拉取 origin/main 最新快照，只接收 capture/items/ 的 ready=true 新包。保留正文与原始图片字节，哈希验证、防重复和不覆盖本地编辑继续生效。
 3. 支持的明确 category 直接对应五个 notes/ 分类；缺失、未知或无效分类统一放 notes/00-Inbox/，不调用模型猜测分类。格式清单和附件路径可以用代码检查；图像含义、长文本分析和语义重命名不自动执行。
-4. 独立快照、SHA256 和隔离恢复 PASS 后，普通 Git 提交清理当前 main 投递包并留回执。网络/清理失败在 Codex 仍运行时按 60 秒起、最多 10 分钟的间隔重试，不强推、不删除未验证原件。未 ready 的包与格式错误等待下一次启动或手动接收。
+4. 独立快照、SHA256 和隔离恢复 PASS 后，普通 Git 提交清理当前 main 投递包并留回执。网络/清理失败保留本机结果和云端原件，下次使用启动入口或手动接收时重试，不强推、不删除未验证原件。未 ready 的包与格式错误等待下一次启动或手动接收。
 5. 无新包时不重新备份全部知识库，也不重复读取历史笔记；完成后只在本机日志记录结果。
 6. 待整理的导入资料保留在本机状态清单，攒多后用户可以说“整理新收到的笔记”。届时才调用 AI 读取 `relay_capture.py --pending` 清单并批量审阅，完成后逐个 --mark-reviewed。已有历史笔记不批量重扫。
 7. Codex 的 inbox/ 任务仍遵循 execution_policy 和目标 AGENTS；收信程序不执行任务。AI 任务执行和深度整理本身会消耗 token，不能归为零 token 收信流程。
@@ -58,22 +58,22 @@ GitHub main 中旧笔记与配置暂保留，避免旧手机 Git Pull 删除资�
 
 ## 启动入口与验证
 
-本机配置 config/capture.local.json（Git 忽略），示例 capture.example.json 无密钥。现有 Windows Startup 的 Relay Notes Sync.lnk 已接入接收器，运行窗口隐藏；通过本机锁保证单实例。
-原来把接收报告写进模型的 Relay SessionStart hook 已移除，AGENTS 也不再要求模型启动时逐篇审阅。桌面启动由 Windows 本地进程检测负责，不依赖 hook 信任或 AI 会话开始。
-当前检测微软商店 OpenAI.Codex 的桌面主进程；关闭进程再启动会再次接收。仅在同一已运行进程中切换聊天，不重复接收。独立 CLI 可手动运行静默入口。
+本机配置 config/capture.local.json、config/codex_launch.local.json 均被 Git 忽略。桌面“ChatGPT(走代理)”已改为 PowerShell 7 调用 start_codex_relay.ps1，现有代理参数不变。原快捷方式和配置备份在 RelayNotes/before-on-demand-intake-20261009。
+收信器没有登录自启和常驻进程。Windows Relay Notes Sync 仍只启动原有手机同步与备份。普通开始菜单/任务栏原生 App 入口不经过此脚本；需要自动收信时使用桌面上述入口。重复点击不会并发启动多个一次性接收器。
+旧 SessionStart 模型报告 hook 保持移除；不会自动让 AI 审阅笔记。失败下次启动/手动接收重试，不在后台持续轮询。
 
 ```powershell
 # 手动立即接收，仍然不调用 AI
 & 'C:/Program Files/Python313/python.exe' -X utf8 E:/Relay/scripts/relay_capture_watch.py --once
 # 查看待批量整理清单，不拉取网络或调用 AI
 & 'C:/Program Files/Python313/python.exe' -X utf8 E:/Relay/scripts/relay_capture.py --pending
-# 修复/重启后台接收器
-& E:/Relay/scripts/start_notes_sync.ps1
+# 使用现有代理打开 Codex 并附带收信一次
+& E:/Relay/scripts/start_codex_relay.ps1
 # 可选静默会话入口，不输出模型上下文
 & 'C:/Program Files/Python313/python.exe' -X utf8 E:/Relay/scripts/relay_session_start.py --quiet
 ```
 
-本机日志为 RelayNotes/capture-watch.log，最近一次结果 capture-last-run.json，启动记录 capture-watch-status.json。失败类型记录不显示认证值。停用时仅结束命令行明确包含 relay_capture_watch.py 的进程并移除启动调用，不删除笔记。
+本机日志为 RelayNotes/capture-watch.log，最近一次结果 capture-last-run.json，一次性收信结果 capture-last-run.json。失败类型记录不显示认证值。停用时仅结束命令行明确包含 relay_capture_watch.py 的进程并移除启动调用，不删除笔记。
 本次 26 项测试通过，包含新启动/重启、子进程不重复、离线重试、静默输出、分类回退及原有完整性与 Git 竞争保护；实际后台启动检查 PASS，单实例与 Windows 登录入口核对通过；真实手机 PNG 链路已在 2026-10-09 完成。官方 [Hooks 文档](https://learn.chatgpt.com/docs/hooks) 说明 stdout 可进模型上下文且空输出成功，因此此流程不采用输出笔记的 hook。
 
 ## 2026-10-08 真实桌面验收
