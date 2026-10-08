@@ -91,3 +91,9 @@ Follow `docs/KNOWLEDGE_FILE_NAMING.md` when processing newly added knowledge fil
 - For any candidate rename, inspect only the required inbound references, preserve Obsidian embeds and Markdown links, avoid collisions, and add concise Chinese captions/descriptions. Do not rename project files outside `notes/`.
 - After each explicit naming-review run, advance the cursor to the remote commit **that was reviewed**, even when there are no candidates. Advance only after any approved renames and reference updates are successfully committed, or skipped with a clear report. Prevent Git races by reading the current cursor and remote head before writing; never force-push or overwrite concurrent changes.
 - Do not reprocess already checked files just because a newer commit was pushed. Do not perform this check on every Codex thought/tool action, or as an always-on background service. Run when requested or as a specifically configured new-files ingestion step.
+
+## Reading image attachments from GitHub
+
+For image files newly added under `notes/` that a text-only GitHub connector cannot read as binary, consult `docs/IMAGE_PREVIEW_BRIDGE.md`. An automatically generated preview manifest and small Base64 JPEG tiles live in `config/image-bridge/`; read the manifest first, then fetch only the tiles needed for the task and present decoded JPEG tiles to a vision-capable model. The `Relay image previews` GitHub Action generates these on the first image-add push without altering the original image. Do not read all preview tiles on every agent session, and never claim to have examined a whole long screenshot after reading just one tile. Desktop Codex with a local cloned image should read the original directly.
+
+This preview cache is separate from the naming workflow, which remains **new-files-only** and is not an always-on ChatGPT background process.
