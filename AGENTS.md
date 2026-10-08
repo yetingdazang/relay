@@ -80,3 +80,15 @@ From the Relay repository:
 `python scripts/relay_status.py`
 
 This prints unread handoffs in `inbox/`.
+
+## Obsidian note and attachment naming policy
+
+When working with knowledge-base files under `notes/`, apply `docs/KNOWLEDGE_FILE_NAMING.md`.
+
+- Detect **likely default/generated** filenames (e.g. `未命名.md`, `Untitled.md`, `Pasted image 20261008.png`, `Screenshot_*.png`, `IMG_*.jpg`, UUID-like names). These are *candidates*, not proof the user wants a rename.
+- When their content is readable and meaningfully identifiable, propose or apply concise, descriptive Chinese names and image captions/metadata. Preserve a user's deliberate filenames and original file extensions.
+- For renames, first inspect references in the vault, then update every affected Obsidian `![[...]]` / `[[...]]` and Markdown link; avoid collisions. On ambiguity, missing access to image contents, or unsafe/broken links, record a suggested name and ask instead of guessing or renaming.
+- Do not automatically rename Codex operational files, repository configuration, scripts, files outside `notes/`, or files owned by other workflows.
+- A file's semantic content must never be invented from its numeric filename or extension. For an image that cannot be viewed, request access or leave it unchanged.
+- Write relevant descriptions in the containing note or a sidecar Markdown index (rather than modifying binary media), and ensure that meaningful user-written descriptions are preserved.
+- ChatGPT and Codex should follow these rules whenever processing Relay knowledge files, but avoid unsolicited bulk renames and force-pushes.
