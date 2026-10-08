@@ -123,6 +123,7 @@ def main():
     parser.add_argument("--config", default=str(Path(__file__).resolve().parents[1] / "config" / "capture.local.json"))
     parser.add_argument("--once", action="store_true", help="Receive now without AI and exit")
     parser.add_argument("--detect", action="store_true", help="Read currently running desktop roots")
+    parser.add_argument("--quiet", action="store_true", help="Write local results only")
     args = parser.parse_args()
     if args.detect:
         print(json.dumps(sorted(running_desktop_roots())))
@@ -136,7 +137,8 @@ def main():
                         format="%(asctime)s %(levelname)s %(message)s")
     if args.once:
         success, outcome = receive(config, state_directory, "manual")
-        print(json.dumps(outcome, ensure_ascii=False))
+        if not args.quiet:
+            print(json.dumps(outcome, ensure_ascii=False))
         return 0 if success else 1
     options = config.get("watch", {})
     tracker = LaunchTracker(options.get("retry_seconds", 60), options.get("maximum_retry_seconds", 600))

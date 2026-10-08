@@ -62,4 +62,4 @@ Personal notes now live in the separate local Obsidian vault. Git stores code, r
 
 New mobile ChatGPT notes and actual attachment bytes can be staged under `capture/items/` on main. Codex imports ready bundles to the local vault, verifies SHA256 and backup restore, then commits a small receipt and removes the current remote staging copy. Git history can retain old data. See [capture workflow](docs/GITHUB_CAPTURE.md); the complete vault remains local.
 
-Local capture intake now runs automatically when the Codex desktop process launches, with no model/API calls. Explicit categories route directly; unknown notes stay in Inbox for owner-requested batch AI organization. See docs/GITHUB_CAPTURE.md.
+Local capture intake runs once through the desktop ChatGPT(走代理) launch shortcut, with no model/API calls. It exits after completion; no intake login autostart or resident watcher. Explicit categories route directly; unknown notes stay in Inbox for owner-requested batch AI organization. See docs/GITHUB_CAPTURE.md.

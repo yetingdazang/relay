@@ -34,3 +34,6 @@ config/notes_sync_devices.local.json
 
 # Machine-local GitHub capture importer
 config/capture.local.json
+
+# Existing desktop launch entry (machine-local)
+config/codex_launch.local.json
