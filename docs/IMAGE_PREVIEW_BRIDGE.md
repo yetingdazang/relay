@@ -47,3 +47,23 @@ GitHub Actions 需要仓库启用 Actions，并允许它使用具有 `contents: 
 在 `push` 事件中读取 push 的 `before/after` 提交差异，只选 `--diff-filter=A` 文件。脚本保留每个源路径对应的 manifest，用于避免重复预览。推送缓存时，工作流自动处理正常的并发 Git 更新，但不强制覆盖主分支。
 
 旧的 `scripts/image_preview_bridge.py` 试验脚本已删除；请统一使用上述正式脚本。
+
+
+## 生命周期与自动清理（已启用）
+
+**这些 Base64 分片是临时缓存，不是需要永久同步到手机的知识资料。**
+
+- 完成图片分析、将有效知识写入 `notes/` 并验证后，**立即删除该图片对应的 `config/image-bridge/<路径哈希>/` 预览目录**，原始图片仍保留。
+- 为防用户没有再次回来要求分析，额外设置 **7 天过期兜底**。GitHub Actions 每日运行 `.github/workflows/relay-preview-cleanup.yml`，只扫描预览缓存的 manifest，按 Git 历史中的生成时间判断是否过期。超过 7 天的缓存删除，未过期且未确认分析完成的缓存保留。
+- 可在 GitHub Actions → Relay preview cleanup → Run workflow 的 `completed_source` 中输入已处理的某张 `notes/` 下图片路径，立即清理对应分片。也可在仓库完整克隆后运行 `python scripts/cleanup_image_previews.py --completed-source 'notes/路径/图片.jpg'`。
+- 自动清理不涉及 `notes/` 的原图，也不会清理新笔记、索引或其他业务文件。
+- 完成清理会产生一个正常 Git 提交；手机 Obsidian Pull 后这些临时文件不会再占用当前工作目录空间。
+- **重要：Git 删除只减少当前版本与后续克隆的文件量，不会自动抹去历史提交内的二进制分片。** 对于真正长期增长的附件，后续应把原图与预览放在独立的对象存储或有 TTL 的临时对象存储，GitHub 仅留图片引用/索引。历史压缩/重写涉及所有设备同步和密钥泄露处理，不在日常清理工作流内自动执行。
+
+### GitHub 和独立存储的长期分工
+
+- GitHub：Markdown、Agent 规则、项目任务、索引和小型配置。
+- 独立附件存储（待选型）：图片、PDF、视频与大二进制；有持久化原图及临时预览的不同生命周期策略。
+- Obsidian：笔记体验、与外部附件的可靠链接；迁移时需要先验证离线访问和链接可用性。
+- ChatGPT/Codex：只按任务读取必要资料，整理成果后及时清理临时缓存。
+
