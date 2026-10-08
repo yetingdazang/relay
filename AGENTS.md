@@ -99,3 +99,14 @@ For image files newly added under `notes/` that a text-only GitHub connector can
 This preview cache is separate from the naming workflow, which remains **new-files-only** and is not an always-on ChatGPT background process.
 
 After the image's content has been reviewed and the note/analysis successfully saved, remove only its generated preview cache directory under `config/image-bridge/`. The script `scripts/cleanup_image_previews.py` and `.github/workflows/relay-preview-cleanup.yml` provide immediate per-image cleanup and a 7-day scheduled expiry fallback; see `docs/IMAGE_PREVIEW_BRIDGE.md`. Preserve original `notes/` images and do not rewrite Git history or force-push merely to clean previews.
+
+## Standard structure for future Obsidian knowledge notes
+
+For future new notes and user-requested revisions in `notes/`, follow `docs/NOTE_FORMAT.md` and the template `notes/03-Resources/Templates/标准知识笔记模板.md`:
+
+1. Title then a short `> [!summary] 提要` at the top.
+2. An actual clickable `## 目录` with exact Obsidian headings using `[[#heading|label]]`, including appropriate nested sections.
+3. The full organized substantive content, with source and analysis distinguished.
+4. Original screenshots/images/source attachments **at the end** with a TOC entry, rather than before the summary.
+
+Verify that every table-of-contents entry resolves to an existing heading and the original embeds remain valid. For short informal notes, simplify proportionately; do not generate empty sections. Do not reformat old notes in bulk without an explicit request. This formatting rule is independent of the new-files-only image/file naming policy.
