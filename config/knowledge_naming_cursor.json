@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "branch": "main",
+  "last_reviewed_commit": "c9d42efcfbcac3a13881b31ac29b1fbc2f3bf1ae",
+  "scope": "notes/",
+  "change_status": [
+    "added"
+  ],
+  "purpose": "Incremental naming of newly added user knowledge files only. Updated by an explicit review after successful completion.",
+  "last_reviewed_at": "2026-10-08"
+}
