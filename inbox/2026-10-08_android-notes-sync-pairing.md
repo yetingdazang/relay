@@ -14,7 +14,7 @@ requested_actions:
   - "验证笔记、图片、离线补传、冲突保留、删除保护和取消下发"
   - "旧 Android Vault 停用 Obsidian Git 后再合入远程 main"
 constraints:
-  - "用户已全权授权此架构切换；防火墙具体放行被自动审批拒绝，仍需明确范围的授权"
+  - "用户已全权授权此架构切换；已明确批准 Syncthing 仅在 Private 网络向本地网段开放 TCP 22000 与 UDP 21027/22000，规则已验证"
   - "只分享指定文件夹，不全库同步，不覆盖或删除旧移动 Vault"
   - "本机模拟节点成功不代表真实 Android 已验证"
   - "保留笔记、图片和旧备份，不改写 Git 历史或强制推送"
@@ -33,7 +33,7 @@ constraints:
 
 ## 待完成
 
-实际 Android 安装/配对和 Windows 局域网连接授权，完成后验证真实设备同步。
+实际 Android 安装/配对及局域网连通验证尚待完成。防火墙已按批准范围配置；以太网为 Private，WLAN 为 Public，未更改网络类型。
 本地接口运行在 http://127.0.0.1:8384。
 用 scripts/notes_sync_status.py 检查现状。
 没有真实设备 ID 时不得假设已经配对完成。
