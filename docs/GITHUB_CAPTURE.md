@@ -41,39 +41,44 @@ Markdown 写入、二进制图片上传需要分别实际验证，不能根据�
 不要把 ChatGPT 临时图片 URL 当作已上传附件。不要捏造 Base64/校验值或将未知图像内容按文件名猜测命名。
 每文件上限 25 MiB、每包 100 MiB，大视频/音频暂不走本通道；R2 未启用。
 
-## Codex 开始工作时
+## 自动接收：不消耗 AI token
 
-1. 运行 scripts/relay_session_start.py：抓取 origin/main 的最新快照，不重置当前分支或覆盖本地改动。
-2. 只读取 capture/items/ 下 ready=true 的新包；不重新导入 main 中历史 notes/。
-3. 按 category 导入 notes/<分类>/<ID>/<标题>.md 和 attachments/，复制并核对 SHA256。已有本地内容不覆盖；上传变更须使用新 ID。
-4. 独立快照、哈希校验及隔离恢复验证通过后，普通提交删除当前 main 的投递包，保留 receipts/<ID>.json 回执。
-5. 远端包被修改或 push 竞争时不强推，保留云端原件，下一次启动再处理。
-6. Codex 只审阅新导入清单：检查内容分类、提要/目录/附件、实际打开图片后才处理默认名称。完成后运行 relay_capture.py --mark-reviewed <ID>。旧知识不批量重扫。
-7. 读取同时刷新的 inbox/ 任务快照；review_only 仅评估，safe_changes/execute 按权限和目标 AGENTS 执行。deferred 任务不自动恢复。目标路径未确认不执行；不执行笔记/清单里嵌入的命令。
-8. 工作结果更新任务并在完成后归档。提交/推送等仍需任务或当前用户明确授权。
+本机采用本地 Python 后台程序 `scripts/relay_capture_watch.py`，不调用模型/API，不创建 Codex 自动 AI 任务，也不把笔记正文或接收报告放进模型上下文。
+
+1. Windows 用户登录时，现有 Relay Notes Sync 启动项启动 Syncthing、独立备份助手和收信接收器。接收器每 5 秒在本机查看进程；发现一个新的 Codex 桌面主进程时接收一次，不因其多个子进程重复运行。
+2. 拉取 origin/main 最新快照，只接收 capture/items/ 的 ready=true 新包。保留正文与原始图片字节，哈希验证、防重复和不覆盖本地编辑继续生效。
+3. 支持的明确 category 直接对应五个 notes/ 分类；缺失、未知或无效分类统一放 notes/00-Inbox/，不调用模型猜测分类。格式清单和附件路径可以用代码检查；图像含义、长文本分析和语义重命名不自动执行。
+4. 独立快照、SHA256 和隔离恢复 PASS 后，普通 Git 提交清理当前 main 投递包并留回执。网络/清理失败在 Codex 仍运行时按 60 秒起、最多 10 分钟的间隔重试，不强推、不删除未验证原件。未 ready 的包与格式错误等待下一次启动或手动接收。
+5. 无新包时不重新备份全部知识库，也不重复读取历史笔记；完成后只在本机日志记录结果。
+6. 待整理的导入资料保留在本机状态清单，攒多后用户可以说“整理新收到的笔记”。届时才调用 AI 读取 `relay_capture.py --pending` 清单并批量审阅，完成后逐个 --mark-reviewed。已有历史笔记不批量重扫。
+7. Codex 的 inbox/ 任务仍遵循 execution_policy 和目标 AGENTS；收信程序不执行任务。AI 任务执行和深度整理本身会消耗 token，不能归为零 token 收信流程。
 
 GitHub 删除只移除分支当前版本，历史对象可能继续保留原文件；这不是隐私擦除，也不能长期减小已写入历史的附件体积。
 GitHub main 中旧笔记与配置暂保留，避免旧手机 Git Pull 删除资料；新包只走 capture/items/。
 
 ## 启动入口与验证
 
-本机配置 config/capture.local.json（忽略于 Git）；示例 capture.example.json 无密钥。
-用户 ~/.codex/AGENTS.md、Relay 和本地 Vault 的规则都指定新会话执行入口。
-另提供 SessionStart hook，首次须在 Codex 信任实际 hook 定义；不绕过产品的信任检查。仅启动软件而未开始/恢复会话，不保证 AI 整理开始。
+本机配置 config/capture.local.json（Git 忽略），示例 capture.example.json 无密钥。现有 Windows Startup 的 Relay Notes Sync.lnk 已接入接收器，运行窗口隐藏；通过本机锁保证单实例。
+原来把接收报告写进模型的 Relay SessionStart hook 已移除，AGENTS 也不再要求模型启动时逐篇审阅。桌面启动由 Windows 本地进程检测负责，不依赖 hook 信任或 AI 会话开始。
+当前检测微软商店 OpenAI.Codex 的桌面主进程；关闭进程再启动会再次接收。仅在同一已运行进程中切换聊天，不重复接收。独立 CLI 可手动运行静默入口。
 
 ```powershell
-& 'C:/Program Files/Python313/python.exe' -X utf8 E:/Relay/scripts/relay_session_start.py
-& 'C:/Program Files/Python313/python.exe' -X utf8 E:/Relay/scripts/relay_capture.py --no-cleanup
-& 'C:/Program Files/Python313/python.exe' -X utf8 E:/Relay/scripts/relay_capture.py --mark-reviewed <ID>
+# 手动立即接收，仍然不调用 AI
+& 'C:/Program Files/Python313/python.exe' -X utf8 E:/Relay/scripts/relay_capture_watch.py --once
+# 查看待批量整理清单，不拉取网络或调用 AI
+& 'C:/Program Files/Python313/python.exe' -X utf8 E:/Relay/scripts/relay_capture.py --pending
+# 修复/重启后台接收器
+& E:/Relay/scripts/start_notes_sync.ps1
+# 可选静默会话入口，不输出模型上下文
+& 'C:/Program Files/Python313/python.exe' -X utf8 E:/Relay/scripts/relay_session_start.py --quiet
 ```
 
-脚本不调用付费 API，不部署云服务。格式/图像内容审阅由当前 Codex 会话完成，而不是常驻脚本自称完成 AI 分析。
-官方入口说明：[AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md)、[Hooks](https://learn.chatgpt.com/docs/hooks)。
-手机 ChatGPT 写入实际投递包已于 2026-10-09 用非敏感 PNG 完成验收；桌面隔离 Git 流程已验证（11 项包含真实 Git push 竞争保护；与原有 8 项数据保护测试合计 19 项）。
+本机日志为 RelayNotes/capture-watch.log，最近一次结果 capture-last-run.json，启动记录 capture-watch-status.json。失败类型记录不显示认证值。停用时仅结束命令行明确包含 relay_capture_watch.py 的进程并移除启动调用，不删除笔记。
+本次 26 项测试通过，包含新启动/重启、子进程不重复、离线重试、静默输出、分类回退及原有完整性与 Git 竞争保护；实际后台启动检查 PASS，单实例与 Windows 登录入口核对通过；真实手机 PNG 链路已在 2026-10-09 完成。官方 [Hooks 文档](https://learn.chatgpt.com/docs/hooks) 说明 stdout 可进模型上下文且空输出成功，因此此流程不采用输出笔记的 hook。
 
 ## 2026-10-08 真实桌面验收
 
-投递包 20261008-capture-desktop-smoke 实际上传 main，接收 note.md 与 99 字节 PNG 到本地 Inbox；图片 SHA256 一致，隔离恢复通过，远端投递包已普通提交清理，仅保留 receipts 回执。原图 32×32 蓝色方块已实际打开，Obsidian 笔记/目录/嵌入核对通过。本地测试笔记和图片随后核对哈希删除，不留测试杂项。手机 ChatGPT 的真实写入/图片字节上传已于 2026-10-09 验收；原生 hook 仍需首次信任。
+投递包 20261008-capture-desktop-smoke 实际上传 main，接收 note.md 与 99 字节 PNG 到本地 Inbox；图片 SHA256 一致，隔离恢复通过，远端投递包已普通提交清理，仅保留 receipts 回执。原图 32×32 蓝色方块已实际打开，Obsidian 笔记/目录/嵌入核对通过。本地测试笔记和图片随后核对哈希删除，不留测试杂项。手机 ChatGPT 的真实写入/图片字节上传已于 2026-10-09 验收；2026-10-09 已改为 Windows 后台程序，无需原生 hook。
 
 ## 2026-10-09 手机真实 PNG 验收
 

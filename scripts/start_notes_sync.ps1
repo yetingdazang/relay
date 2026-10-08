@@ -17,3 +17,14 @@ if (-not $existingImporter) {
         '-X', 'utf8', ('"' + $importerPath + '"'), '--config', ('"' + $syncConfigPath + '"'), '--watch'
     ) -WindowStyle Hidden
 }
+
+# Pure local intake when the Codex desktop root process starts; no model/API calls.
+$captureWatcherPath = Join-Path $PSScriptRoot 'relay_capture_watch.py'
+$captureConfigPath = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\config\capture.local.json'))
+$existingCaptureWatcher = Get-CimInstance Win32_Process -Filter "Name='pythonw.exe'" |
+    Where-Object { $_.CommandLine -and $_.CommandLine.Contains($captureWatcherPath) }
+if ((Test-Path -LiteralPath $captureConfigPath) -and -not $existingCaptureWatcher) {
+    Start-Process -FilePath 'C:\Program Files\Python313\pythonw.exe' -ArgumentList @(
+        '-X', 'utf8', ('"' + $captureWatcherPath + '"'), '--config', ('"' + $captureConfigPath + '"')
+    ) -WindowStyle Hidden
+}
