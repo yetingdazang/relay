@@ -70,3 +70,7 @@ GitHub main 中旧笔记与配置暂保留，避免旧手机 Git Pull 删除资�
 脚本不调用付费 API，不部署云服务。格式/图像内容审阅由当前 Codex 会话完成，而不是常驻脚本自称完成 AI 分析。
 官方入口说明：[AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md)、[Hooks](https://learn.chatgpt.com/docs/hooks)。
 手机 ChatGPT 写入实际投递包的链路尚待一张非敏感图片验收；桌面隔离 Git 流程已验证（11 项包含真实 Git push 竞争保护；与原有 8 项数据保护测试合计 19 项）。
+
+## 2026-10-08 真实桌面验收
+
+投递包 20261008-capture-desktop-smoke 实际上传 main，接收 note.md 与 99 字节 PNG 到本地 Inbox；图片 SHA256 一致，隔离恢复通过，远端投递包已普通提交清理，仅保留 receipts 回执。原图 32×32 蓝色方块已实际打开，Obsidian 笔记/目录/嵌入核对通过。本地测试笔记和图片随后核对哈希删除，不留测试杂项。手机 ChatGPT 的真实写入/图片字节上传尚待用户手机测试；原生 hook 仍需首次信任。
