@@ -31,3 +31,6 @@ Excalidraw/
 *.base
 config/notes_sync.local.json
 config/notes_sync_devices.local.json
+
+# Machine-local GitHub capture importer
+config/capture.local.json

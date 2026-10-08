@@ -8,7 +8,7 @@ def extract(text, key):
     m = re.search(rf"^{re.escape(key)}:\s*[\"']?(.+?)[\"']?\s*$", text, re.M)
     return m.group(1).strip() if m else "unknown"
 
-files = sorted(INBOX.glob("*.md"), reverse=True)
+files = sorted(INBOX.glob("*.md"), key=lambda path: (extract(path.read_text(encoding="utf-8"), "created_at"), path.name), reverse=True)
 
 if not files:
     print("Relay inbox is empty.")
@@ -26,3 +26,4 @@ for path in files:
     print(f"  target: {target}")
     print(f"  policy: {policy}")
     print(f"  status: {status}")
+    print(f"  execution authorized: {policy in {"safe_changes", "execute"} and status != "deferred"}")

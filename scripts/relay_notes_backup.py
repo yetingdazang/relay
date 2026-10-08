@@ -101,6 +101,9 @@ def backup_local_setup(config, verify_restore=False):
         "target-mapping.json": settings / "targets.local.json",
         "paired-devices.json": settings / "notes_sync_devices.local.json",
         "import-state.json": Path(config["state_path"]),
+        "capture-settings.json": settings / "capture.local.json",
+        "capture-state.json": state_parent / "capture-state.json",
+        "capture-cleanup-pending.json": state_parent / "full-sync-cleanup-pending.json",
         "desktop-device-id.txt": state_parent / "desktop-device-id.txt",
         "obsidian-vault-registration.json": Path(os.environ["APPDATA"]) / "obsidian" / "obsidian.json",
     }

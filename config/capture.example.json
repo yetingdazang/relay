@@ -1,0 +1,8 @@
+{
+  "relay": "E:/Relay",
+  "vault": "E:/OBSIDIAN",
+  "branch": "main",
+  "staging_root": "E:/RelaySync/GitHubCache/staging",
+  "state_path": "C:/Users/Administrator/AppData/Local/RelayNotes/capture-state.json",
+  "backup_config": "E:/Relay/config/notes_sync.local.json"
+}
