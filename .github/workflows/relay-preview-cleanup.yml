@@ -1,0 +1,75 @@
+name: Relay preview cleanup
+
+on:
+  schedule:
+    - cron: "23 3 * * *"
+  workflow_dispatch:
+    inputs:
+      completed_source:
+        description: "Optional notes/ image already analyzed: delete its preview tiles now"
+        required: false
+        type: string
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/cleanup_image_previews.py"
+      - ".github/workflows/relay-preview-cleanup.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: relay-image-preview-main
+  cancel-in-progress: false
+
+jobs:
+  clean-generated-preview-tiles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout history (used to calculate cache age)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Python runtime
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Prune consumed cache or cache older than 7 days
+        env:
+          COMPLETED_SOURCE: ${{ inputs.completed_source }}
+        shell: bash
+        run: |
+          python scripts/cleanup_image_previews.py \
+            --expire-days 7 \
+            --completed-source "$COMPLETED_SOURCE"
+
+      - name: Save cleanup (no original pictures touched)
+        shell: bash
+        run: |
+          if [[ -z "$(git status --porcelain -- config/image-bridge/)" ]]; then
+            echo "No preview tiles to remove."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -- config/image-bridge/
+          git commit -m "chore(relay): prune expired/consumed preview tiles [skip ci]"
+          for attempt in 1 2 3; do
+            if git push origin HEAD:main; then
+              echo "Preview cleanup synced."
+              exit 0
+            fi
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "Cleanup push conflict; aborting without force push."
+              exit 1
+            fi
+          done
+          echo "Cleanup push unsuccessful."
+          exit 1
