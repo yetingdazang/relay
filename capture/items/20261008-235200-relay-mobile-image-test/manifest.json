@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "id": "20261008-235200-relay-mobile-image-test",
+  "ready": true,
+  "title": "Relay 手机端真实 PNG 投递验收记录",
+  "category": "projects",
+  "attachments": [
+    {
+      "path": "attachments/relay-capture-test.png",
+      "sha256": "c5bc88385b00f8067e642d6b5cef366eb37de10eaf1af09b5d9fd082e70876bf"
+    }
+  ]
+}
