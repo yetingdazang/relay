@@ -1,3 +1,5 @@
+> 当前使用本地知识库与选择同步，见 [LOCAL_NOTES_SYNC.md](LOCAL_NOTES_SYNC.md)。以下保留为旧版 Git 全库同步说明，不用于新设备配置。
+
 # Obsidian 清爽视图说明
 
 ## 设计

@@ -1,5 +1,17 @@
 # Relay agent instructions
 
+## Current local-first architecture (2026-10-08)
+
+- Relay lives at `E:/Relay` and contains code, rules, and Codex handoffs only.
+- The complete local knowledge vault lives at `E:/OBSIDIAN`; it is not tracked by Git.
+- Consult `config/targets.local.json` for exact machine-local mappings.
+- Mobile notes enter separate staging folders and are imported with `scripts/relay_notes_import.py`.
+- See `docs/LOCAL_NOTES_SYNC.md` for selective device folders and backup/restore.
+- Do not commit personal notes, Obsidian plugin settings, or synchronization credentials.
+- Older Git-based note naming and preview workflows below are retained as historical guidance. They are not the ingestion workflow for the new local vault and must not run automatically against old notes.
+- New-file naming remains explicit, incremental, and limited to newly added default-named files; do not bulk process existing notes.
+
+
 Relay is a cross-device handoff inbox between mobile ChatGPT and desktop Codex.
 
 ## Session start behavior

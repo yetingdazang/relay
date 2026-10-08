@@ -53,3 +53,7 @@ Open the Relay repository in Codex and ask:
 > Check Relay inbox and process the newest handoff.
 
 Codex will follow `AGENTS.md`, resolve the target project from the local mapping, inspect the target project's own instructions, and proceed according to the handoff's execution policy.
+
+## Local knowledge vault (2026-10-08)
+
+Personal notes now live in the separate local Obsidian vault. Git stores code, rules and Codex handoffs only. Android notes are imported locally; three device folders control selective distribution. See [local notes sync](docs/LOCAL_NOTES_SYNC.md) for setup, verification and independent backup/restore.
