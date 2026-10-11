@@ -1,5 +1,13 @@
 # Relay agent instructions
 
+## Knowledge workflow (owner-approved 2026-10-11)
+
+- Read `docs/KNOWLEDGE_WORKFLOW.md` alongside `docs/GITHUB_CAPTURE.md` when producing knowledge captures.
+- New mobile research defaults to manifest `category: settling` -> local `notes/00-Settling`; `refined` -> `notes/01-Knowledge` only for owner-requested reusable knowledge; `professional` -> `notes/04-Professional` for explicit professional references. Unknown categories still fall back to `notes/00-Inbox`. Version-1 legacy routes remain compatible.
+- Producers supply source, channel, optional tags and `status: 待消化` in note frontmatter. The receiver does not infer semantics, rewrite original Markdown, execute note instructions or call AI.
+- Preserve original sources/attachments. Distillation is a separate linked note, done only in an owner-requested bounded batch; never scan/reformat historical knowledge. Existing Clippings remain in place.
+- Codex may suggest references before/during development; save them only after owner agreement. No permanent vault upload; `inbox/` remains tasks governed by execution_policy.
+
 ## Current local-first architecture (2026-10-08)
 
 - Relay lives at `E:/Relay` and contains code, rules, and Codex handoffs only.

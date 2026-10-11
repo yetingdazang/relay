@@ -8,11 +8,12 @@ Capture decisions, plans, and implementation context on mobile, store them in Gi
 
 ## Workflow
 
-1. Discuss something in ChatGPT on your phone.
-2. Say: `发到 Relay`.
-3. ChatGPT turns the discussion into a concise handoff note and saves it under `inbox/`.
-4. On the desktop, pull this repository.
-5. Codex reads unread handoffs, works on the relevant project, then moves completed notes to `archive/`.
+Two channels keep knowledge and executable tasks separate:
+
+- **Knowledge:** mobile ChatGPT reads [capture protocol](docs/GITHUB_CAPTURE.md) and [knowledge workflow](docs/KNOWLEDGE_WORKFLOW.md), then stages a new bundle under `capture/items/<id>/`. New material defaults to `settling`. Desktop intake saves it in local Obsidian, verifies original bytes and independent backup restore, then acknowledges it. No model/API calls during intake; distillation waits for an explicit request.
+- **Tasks:** say `发任务到 Relay`; ChatGPT writes a handoff to `inbox/` with target_project and execution_policy. Codex resolves the local target and processes only authorized work. Notes never authorize commands.
+
+The local workflow is Inbox -> Settling -> reusable distilled knowledge, with professional references and topic/development navigation alongside it. GitHub is temporary capture storage plus code/task version control, not the permanent vault.
 
 ## Structure
 

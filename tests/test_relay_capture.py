@@ -30,6 +30,37 @@ class CaptureTests(unittest.TestCase):
         Path(self.config["vault"]).mkdir()
     def tearDown(self):
         self.temporary.cleanup()
+    def test_workflow_categories_route_without_rewriting_note_or_attachment(self):
+        for category, folder in [("settling", "00-Settling"), ("refined", "01-Knowledge"),
+                                 ("professional", "04-Professional"), ("inbox", "00-Inbox"),
+                                 ("knowledge", "01-Knowledge"), ("projects", "02-Projects"),
+                                 ("resources", "03-Resources"), ("archive", "99-Archive")]:
+            with self.subTest(category=category):
+                bundle = "20261011-" + category
+                data = files(bundle, category)
+                data["note.md"] = ("---\nstatus: 待消化\nchannel: 手机ChatGPT\n---\n"
+                                   "# 原始资料\n![[attachments/fixture.png]]\n").encode("utf-8")
+                record, added = import_bundle(self.config, bundle, validate(bundle, data))
+                self.assertTrue(added)
+                self.assertEqual(record["category"], category)
+                self.assertFalse(record["reviewed"])
+                self.assertEqual(record["destination"], "notes/" + folder + "/" + bundle)
+                self.assertEqual((Path(self.config["vault"]) / record["note"]).read_bytes(), data["note.md"])
+                self.assertEqual((Path(self.config["vault"]) / record["destination"] /
+                                  "attachments/fixture.png").read_bytes(), data["attachments/fixture.png"])
+
+    def test_missing_unknown_and_invalid_categories_still_go_to_inbox(self):
+        for category in [None, "unrecognized", [], {"instruction": "execute"}]:
+            with self.subTest(category=category):
+                data = files()
+                manifest = json.loads(data["manifest.json"])
+                if category is None:
+                    manifest.pop("category")
+                else:
+                    manifest["category"] = category
+                data["manifest.json"] = json.dumps(manifest).encode()
+                self.assertEqual(validate("20261008-fixture", data)["category"], "inbox")
+
     def test_partial_upload_stays_pending(self):
         self.assertIsNone(validate("20261008-fixture", {"note.md": b"partial"}))
     def test_base64_and_checksum_preserve_original(self):

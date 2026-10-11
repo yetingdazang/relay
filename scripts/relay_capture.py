@@ -14,7 +14,10 @@ from pathlib import Path, PurePosixPath
 from relay_notes_backup import atomic_json, backup_local_setup, sha256
 from relay_notes_import import exclusive_lock, safe_target
 
-CATEGORIES = {"inbox": "00-Inbox", "knowledge": "01-Knowledge", "projects": "02-Projects",
+# Keep version-1 legacy routes stable; new producers opt into workflow categories.
+CATEGORIES = {"inbox": "00-Inbox", "settling": "00-Settling",
+              "refined": "01-Knowledge", "professional": "04-Professional",
+              "knowledge": "01-Knowledge", "projects": "02-Projects",
               "resources": "03-Resources", "archive": "99-Archive"}
 MAX_FILE = 25 * 1024 * 1024
 MAX_BUNDLE = 100 * 1024 * 1024

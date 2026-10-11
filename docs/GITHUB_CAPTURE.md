@@ -4,7 +4,7 @@
 
 ## 手机端约定
 
-请手机 ChatGPT 先读取 AGENTS.md 和 docs/GITHUB_CAPTURE.md；使用 main 分支。
+请手机 ChatGPT 先读取 AGENTS.md、docs/GITHUB_CAPTURE.md 和 docs/KNOWLEDGE_WORKFLOW.md 最新版本；使用 main 分支。
 每次新增一个 capture/items/<唯一ID>/ 投递包。不要把知识笔记写进 inbox/；inbox/ 是 Codex 任务。
 
 投递包包含 note.md、attachments/（可选）和 manifest.json。
@@ -17,14 +17,28 @@ ID 用日期时间与简短英文后缀，例如 20261008-235000-ai-notes，不�
   "id": "20261008-235000-ai-notes",
   "ready": true,
   "title": "AI 使用经验",
-  "category": "knowledge",
+  "category": "settling",
   "attachments": [{"path": "attachments/经验截图.png"}]
 }
 ```
 
 note.md 按 docs/NOTE_FORMAT.md 写：提要、可点击目录、正文、文末原始附件。
 包内图片用 ![[attachments/经验截图.png]] 或 ![](attachments/经验截图.png)。导入后同一相对目录结构保留。
-分类：inbox（待整理）、knowledge（长期知识）、projects（项目笔记）、resources（参考资料）、archive（归档）。不确定就 inbox。
+新资料默认 `settling`（沉淀池）；主人明确要求可复用成品时用 `refined`（提炼池），专业原始参考用 `professional`（专业资料）。不确定用 `inbox`（临时缓冲）。旧版 knowledge、projects、resources、archive 的路径保持兼容；不要把尚待消化的资料误标为已提炼。
+
+note.md 建议带以下属性；缺失属性也能接收，接收器不改原文。source 仅填真实来源，关键词可以留空：
+
+```yaml
+---
+stage: 沉淀
+status: 待消化
+channel: 手机ChatGPT
+source: "真实原始来源 URL，未知时留空"
+tags: []
+---
+```
+
+手机可直接说：“先读 Relay main 最新协议，把这份资料按 settling 投递，保留原始附件和来源，ready 最后写；不要写进任务 inbox。”
 
 ## 图片上传能力边界
 
@@ -47,7 +61,7 @@ Markdown 写入、二进制图片上传需要分别实际验证，不能根据�
 
 1. 从桌面“ChatGPT(走代理)”入口打开 Codex 时，start_codex_relay.ps1 沿用原代理启动器并附带执行一次收信。收信结束即退出，不登录自启、不常驻检测。原有 Syncthing/备份登录入口不包含收信。
 2. 拉取 origin/main 最新快照，只接收 capture/items/ 的 ready=true 新包。保留正文与原始图片字节，哈希验证、防重复和不覆盖本地编辑继续生效。
-3. 支持的明确 category 直接对应五个 notes/ 分类；缺失、未知或无效分类统一放 notes/00-Inbox/，不调用模型猜测分类。格式清单和附件路径可以用代码检查；图像含义、长文本分析和语义重命名不自动执行。
+3. 支持的明确 category 对应知识流程目录（见 docs/KNOWLEDGE_WORKFLOW.md）；缺失、未知或无效分类统一放 notes/00-Inbox/，不调用模型猜测分类。格式清单和附件路径可以用代码检查；图像含义、长文本分析和语义重命名不自动执行。
 4. 独立快照、SHA256 和隔离恢复 PASS 后，普通 Git 提交清理当前 main 投递包并留回执。网络/清理失败保留本机结果和云端原件，下次使用启动入口或手动接收时重试，不强推、不删除未验证原件。未 ready 的包与格式错误等待下一次启动或手动接收。
 5. 无新包时不重新备份全部知识库，也不重复读取历史笔记；完成后只在本机日志记录结果。
 6. 待整理的导入资料保留在本机状态清单，攒多后用户可以说“整理新收到的笔记”。届时才调用 AI 读取 `relay_capture.py --pending` 清单并批量审阅，完成后逐个 --mark-reviewed。已有历史笔记不批量重扫。
@@ -74,7 +88,7 @@ GitHub main 中旧笔记与配置暂保留，避免旧手机 Git Pull 删除资�
 ```
 
 本机日志为 RelayNotes/capture-watch.log，最近一次结果 capture-last-run.json，一次性收信结果 capture-last-run.json。失败类型记录不显示认证值。停用时仅结束命令行明确包含 relay_capture_watch.py 的进程并移除启动调用，不删除笔记。
-本次 26 项测试通过，包含新启动/重启、子进程不重复、离线重试、静默输出、分类回退及原有完整性与 Git 竞争保护；实际后台启动检查 PASS，单实例与 Windows 登录入口核对通过；真实手机 PNG 链路已在 2026-10-09 完成。官方 [Hooks 文档](https://learn.chatgpt.com/docs/hooks) 说明 stdout 可进模型上下文且空输出成功，因此此流程不采用输出笔记的 hook。
+2026-10-09 的 26 项测试通过，包含新启动/重启、子进程不重复、离线重试、静默输出、分类回退及原有完整性与 Git 竞争保护；实际后台启动检查 PASS，单实例与 Windows 登录入口核对通过；真实手机 PNG 链路已在 2026-10-09 完成。官方 [Hooks 文档](https://learn.chatgpt.com/docs/hooks) 说明 stdout 可进模型上下文且空输出成功，因此此流程不采用输出笔记的 hook。
 
 ## 2026-10-08 真实桌面验收
 
@@ -83,3 +97,7 @@ GitHub main 中旧笔记与配置暂保留，避免旧手机 Git Pull 删除资�
 ## 2026-10-09 手机真实 PNG 验收
 
 手机提交 3ceb002（笔记/PNG）及 491a152（ready 清单）。桌面入口接收 20261008-235200-relay-mobile-image-test 至本地 Projects，核对 187 字节、128×40 蓝绿紫橙图及 SHA256 c5bc88385b00f8067e642d6b5cef366eb37de10eaf1af09b5d9fd082e70876bf。目录和相对附件路径通过，实际打开 PNG 与 Obsidian 笔记。独立快照 notes-20261009-000400-865523 的 73 文件、14 项设置及隔离恢复 PASS；普通清理提交 f33db9f 保留回执，原知识/附件未删除。手机已连接，Syncthing completion=100，needBytes=0、needItems=0、无错误。保留本地验收记录供用户查看；手机 Obsidian 实际渲染需用户查看，本次不推定任意大文件与不同应用权限均已验证。
+
+## 2026-10-11 知识流程升级
+
+新增 settling、refined、professional 明确路由；旧版五类及未知分类回退保持兼容。28 项本地测试通过，包含新路由的原文/附件字节保持、备份失败恢复和并发 Git 更新保护。此处是程序验收，Edge 模板导入及手机页面渲染仍需实际设备验证。

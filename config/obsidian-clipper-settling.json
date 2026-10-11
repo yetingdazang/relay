@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "0.1.0",
+  "name": "Relay · 网页沉淀",
+  "behavior": "create",
+  "noteNameFormat": "{{date|date:\"YYYY-MM-DD-HHmmss\"}} {{title}}",
+  "path": "notes/00-Settling",
+  "vault": "OBSIDIAN",
+  "noteContentFormat": "# {{title}}\n\n> [!summary] 提要\n> 网页剪藏，尚待消化。以下为网页描述，不代表已验证结论。\n> {{description}}\n\n## 目录\n- [[#为什么留下|为什么留下]]\n- [[#阅读与疑问|阅读与疑问]]\n- [[#提炼去向|提炼去向]]\n- [[#原始资料|原始资料]]\n\n## 为什么留下\n<!-- 可补一句收集理由。 -->\n\n## 阅读与疑问\n<!-- 阅读后标注；原文观点与个人分析分开。 -->\n\n## 提炼去向\n<!-- 完成后链接正式知识，状态改为已提炼。 -->\n\n## 原始资料\n来源：[{{title}}]({{url}})\n\n{{content}}",
+  "properties": [
+    {
+      "name": "stage",
+      "value": "沉淀",
+      "type": "text"
+    },
+    {
+      "name": "status",
+      "value": "待消化",
+      "type": "text"
+    },
+    {
+      "name": "channel",
+      "value": "网页剪藏",
+      "type": "text"
+    },
+    {
+      "name": "source",
+      "value": "{{url}}",
+      "type": "text"
+    },
+    {
+      "name": "created",
+      "value": "{{date|date:\"YYYY-MM-DD\"}}",
+      "type": "date"
+    }
+  ],
+  "triggers": []
+}
