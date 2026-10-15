@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "id": "20261015-100138-agent-game-dev-guide",
+  "source_hash": "358b95272b051e4c4df7a636d07b7433e1228d70038e70e1f1f03fa0dd34985a",
+  "files": {
+    "manifest.json": "d8b77e31e5e6038ca755410b2a7a8ca03be7ab22734a840b13d4e1f91dc0bf7b",
+    "note.md": "611543e7d3f59254cedf8e9a28ea1b4ed642cd07871f7979a4f6ea297bcc37f9"
+  },
+  "category": "settling",
+  "result": "imported_and_backup_restore_verified"
+}
