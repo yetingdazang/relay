@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "id": "20261019-143800-neuroexperience-fiction",
+  "source_hash": "f77ac46214ea76a9e1cf760a75beade5171f52f9a3f6126ebffaccd0d1ccae87",
+  "files": {
+    "manifest.json": "f32089726fd7c1e2d87ace8e54f7f7c337edb7c677b8f47be2ac088a99a05fab",
+    "note.md": "76740891a9caa211f7d3996a23261c578070bfc7c86336cc9c31f03ac506688d"
+  },
+  "category": "refined",
+  "result": "imported_and_backup_restore_verified"
+}
